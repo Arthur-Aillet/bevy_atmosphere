@@ -36,7 +36,9 @@ use bevy::{
     render::{
         extract_resource::ExtractResource,
         render_asset::RenderAssets,
-        render_resource::{BindGroup, BindGroupLayout, CachedComputePipelineId},
+        render_resource::{
+            BindGroup, BindGroupLayout, BindGroupLayoutDescriptor, CachedComputePipelineId,
+        },
         renderer::RenderDevice,
         texture::{FallbackImage, GpuImage},
     },
@@ -78,7 +80,7 @@ pub struct AtmosphereModelMetadata {
     /// Used to test if the model has changed.
     pub id: TypeId,
     /// Used to create the `BindGroup`.
-    pub bind_group_layout: BindGroupLayout,
+    pub bind_group_layout: BindGroupLayoutDescriptor,
     /// Used to get the shader's pipeline.
     pub pipeline: CachedComputePipelineId,
 }
@@ -87,7 +89,7 @@ pub struct AtmosphereModelMetadata {
 pub trait RegisterAtmosphereModel: GetTypeRegistration {
     fn register(app: &mut App);
 
-    fn bind_group_layout(render_device: &RenderDevice) -> BindGroupLayout;
+    fn bind_group_layout() -> BindGroupLayoutDescriptor;
 }
 
 /// A trait for using [`RegisterAtmosphereModel`] from `App`.

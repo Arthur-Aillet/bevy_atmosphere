@@ -2,9 +2,10 @@
 
 use std::ops::{Deref, DerefMut};
 
+use bevy::ecs::change_detection::Tick;
 use bevy::{
     ecs::{
-        component::{ComponentId, Tick},
+        component::ComponentId,
         query::FilteredAccessSet,
         system::{ReadOnlySystemParam, SystemMeta, SystemParam},
         world::unsafe_world_cell::UnsafeWorldCell,

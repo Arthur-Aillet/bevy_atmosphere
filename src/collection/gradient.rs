@@ -1,5 +1,10 @@
 use crate::model::{AtmosphereModelMetadata, Atmospheric, RegisterAtmosphereModel};
-use bevy::{asset::uuid_handle, ecs::reflect::AppTypeRegistry, prelude::*, render::render_resource::ShaderType};
+use bevy::{
+    asset::uuid_handle,
+    ecs::reflect::AppTypeRegistry,
+    prelude::*,
+    render::render_resource::{BindGroupLayoutDescriptor, ShaderType},
+};
 
 /// Handle for the gradient shader
 pub const GRADIENT_SHADER_HANDLE: Handle<Shader> =
@@ -62,13 +67,13 @@ impl Atmospheric for Gradient {
             layout,
             &[BindGroupEntry {
                 binding: 0,
-                resource: render_device.create_buffer_with_data(
-                    &BufferInitDescriptor {
+                resource: render_device
+                    .create_buffer_with_data(&BufferInitDescriptor {
                         label: None,
                         usage: BufferUsages::COPY_DST | BufferUsages::UNIFORM,
                         contents: buffer.as_ref(),
-                    }
-                ).as_entire_binding(),
+                    })
+                    .as_entire_binding(),
             }],
         )
     }
@@ -88,7 +93,7 @@ impl Atmospheric for Gradient {
 
 impl RegisterAtmosphereModel for Gradient {
     fn register(app: &mut bevy::prelude::App) {
-        use bevy::render::{render_resource::ComputePipelineDescriptor, renderer::RenderDevice, RenderApp};
+        use bevy::render::{render_resource::ComputePipelineDescriptor, RenderApp};
         use std::{any::TypeId, borrow::Cow};
 
         app.register_type::<Self>();
@@ -96,14 +101,12 @@ impl RegisterAtmosphereModel for Gradient {
         let handle = GRADIENT_SHADER_HANDLE;
 
         let render_app = app.sub_app_mut(RenderApp);
-        let render_device = render_app.world().resource::<RenderDevice>();
-        let crate::pipeline::AtmosphereImageBindGroupLayout(image_bind_group_layout) =
-            render_app
-                .world()
-                .resource::<crate::pipeline::AtmosphereImageBindGroupLayout>()
-                .clone();
+        let crate::pipeline::AtmosphereImageBindGroupLayout(image_bind_group_layout) = render_app
+            .world()
+            .resource::<crate::pipeline::AtmosphereImageBindGroupLayout>()
+            .clone();
 
-        let bind_group_layout = Self::bind_group_layout(render_device);
+        let bind_group_layout = Self::bind_group_layout();
 
         let pipeline_cache = render_app
             .world_mut()
@@ -135,18 +138,20 @@ impl RegisterAtmosphereModel for Gradient {
             registration.insert(data);
         }
     }
-    
-    fn bind_group_layout(render_device: &bevy::render::renderer::RenderDevice) -> bevy::render::render_resource::BindGroupLayout {
+
+    fn bind_group_layout() -> BindGroupLayoutDescriptor {
         use bevy::render::render_resource::*;
-        render_device.create_bind_group_layout(
-            None,
+        BindGroupLayoutDescriptor::new(
+            "Atmosphere",
             &[BindGroupLayoutEntry {
                 binding: 0,
                 visibility: ShaderStages::COMPUTE,
                 ty: BindingType::Buffer {
                     ty: BufferBindingType::Uniform,
                     has_dynamic_offset: false,
-                    min_binding_size: Some(std::num::NonZero::new(<Self as ShaderType>::min_size().get()).unwrap()),
+                    min_binding_size: Some(
+                        std::num::NonZero::new(<Self as ShaderType>::min_size().get()).unwrap(),
+                    ),
                 },
                 count: None,
             }],

@@ -13,10 +13,11 @@ use bevy::{
         render_asset::RenderAssets,
         render_graph::{self, RenderGraph, RenderLabel},
         render_resource::{
-            BindGroup, BindGroupEntries, BindGroupLayout, BindGroupLayoutEntry, BindingResource,
-            BindingType, CachedPipelineState, ComputePassDescriptor, Extent3d, PipelineCache,
-            ShaderStages, StorageTextureAccess, TextureAspect, TextureDescriptor, TextureDimension,
-            TextureFormat, TextureUsages, TextureView, TextureViewDescriptor, TextureViewDimension,
+            BindGroup, BindGroupEntries, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
+            BindingResource, BindingType, CachedPipelineState, ComputePassDescriptor, Extent3d,
+            PipelineCache, ShaderStages, StorageTextureAccess, TextureAspect, TextureDescriptor,
+            TextureDimension, TextureFormat, TextureUsages, TextureView, TextureViewDescriptor,
+            TextureViewDimension,
         },
         renderer::RenderDevice,
         texture::{FallbackImage, GpuImage},
@@ -54,13 +55,11 @@ pub struct AtmosphereImage {
 
 /// The `BindGroupLayout` for binding [`AtmosphereImage`] to the compute shader.
 #[derive(Resource, Debug, Clone)]
-pub struct AtmosphereImageBindGroupLayout(pub BindGroupLayout);
+pub struct AtmosphereImageBindGroupLayout(pub BindGroupLayoutDescriptor);
 
 impl FromWorld for AtmosphereImageBindGroupLayout {
     fn from_world(world: &mut World) -> Self {
-        let render_device = world.resource::<RenderDevice>();
-
-        Self(render_device.create_bind_group_layout(
+        Self(BindGroupLayoutDescriptor::new(
             "bevy_atmosphere_image_bind_group_layout",
             &[BindGroupLayoutEntry {
                 // AtmosphereImage
@@ -389,6 +388,7 @@ fn prepare_atmosphere_bind_group(
     type_registry: Res<AtmosphereTypeRegistry>,
     image_bind_group_layout: Res<AtmosphereImageBindGroupLayout>,
     atmosphere: Option<Res<AtmosphereModel>>,
+    pipeline_cache: Res<PipelineCache>,
 ) {
     let Some(atmosphere_image) = atmosphere_image else {
         return;
@@ -404,7 +404,7 @@ fn prepare_atmosphere_bind_group(
         None => default(),
     };
 
-    let bind_group_layout = {
+    let bind_group_layout_desc = {
         let data = cached_metadata.clone().0.unwrap_or_else(|| {
             let data = {
                 let type_registry = type_registry.read();
@@ -420,7 +420,7 @@ fn prepare_atmosphere_bind_group(
     };
 
     let atmosphere_bind_group = atmosphere.model().as_bind_group(
-        &bind_group_layout,
+        &pipeline_cache.get_bind_group_layout(&bind_group_layout_desc),
         &render_device,
         &gpu_images,
         &fallback_image,
@@ -428,7 +428,7 @@ fn prepare_atmosphere_bind_group(
 
     let image_bind_group = render_device.create_bind_group(
         "bevy_atmosphere_image_bind_group",
-        &image_bind_group_layout.0,
+        &pipeline_cache.get_bind_group_layout(&image_bind_group_layout.0),
         &BindGroupEntries::single(BindingResource::TextureView(view)),
     );
 
