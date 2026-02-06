@@ -101,12 +101,13 @@ impl RegisterAtmosphereModel for Gradient {
         let handle = GRADIENT_SHADER_HANDLE;
 
         let render_app = app.sub_app_mut(RenderApp);
-        let crate::pipeline::AtmosphereImageBindGroupLayout(image_bind_group_layout) = render_app
-            .world()
-            .resource::<crate::pipeline::AtmosphereImageBindGroupLayout>()
-            .clone();
+        let crate::pipeline::AtmosphereImageBindGroupLayoutDescriptor(image_bind_group_layout_desc) =
+            render_app
+                .world()
+                .resource::<crate::pipeline::AtmosphereImageBindGroupLayoutDescriptor>()
+                .clone();
 
-        let bind_group_layout = Self::bind_group_layout();
+        let bind_group_layout_desc = Self::bind_group_layout_desc();
 
         let pipeline_cache = render_app
             .world_mut()
@@ -114,7 +115,7 @@ impl RegisterAtmosphereModel for Gradient {
 
         let pipeline = pipeline_cache.queue_compute_pipeline(ComputePipelineDescriptor {
             label: Some(Cow::from("bevy_atmosphere_compute_pipeline")),
-            layout: vec![bind_group_layout.clone(), image_bind_group_layout],
+            layout: vec![bind_group_layout_desc.clone(), image_bind_group_layout_desc],
             push_constant_ranges: vec![],
             shader: handle,
             shader_defs: vec![],
@@ -125,7 +126,7 @@ impl RegisterAtmosphereModel for Gradient {
         let id = TypeId::of::<Self>();
         let data = AtmosphereModelMetadata {
             id,
-            bind_group_layout,
+            bind_group_layout_desc,
             pipeline,
         };
 
@@ -139,7 +140,7 @@ impl RegisterAtmosphereModel for Gradient {
         }
     }
 
-    fn bind_group_layout() -> BindGroupLayoutDescriptor {
+    fn bind_group_layout_desc() -> BindGroupLayoutDescriptor {
         use bevy::render::render_resource::*;
         BindGroupLayoutDescriptor::new(
             "Atmosphere",

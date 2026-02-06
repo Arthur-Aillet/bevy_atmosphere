@@ -149,12 +149,14 @@ pub fn derive_atmospheric(ast: syn::DeriveInput) -> Result<TokenStream> {
                 let mut hasher = DefaultHasher::new();
                 s.hash(&mut hasher);
                 let hash = hasher.finish();
-                format!("{:08x}-{:04x}-{:04x}-{:04x}-{:012x}", 
+                format!(
+                    "{:08x}-{:04x}-{:04x}-{:04x}-{:012x}",
                     (hash >> 32) as u32,
                     ((hash >> 16) & 0xFFFF) as u16,
                     (hash & 0xFFFF) as u16,
                     ((hash >> 48) & 0xFFFF) as u16,
-                    hash & 0xFFFFFFFFFFFF)
+                    hash & 0xFFFFFFFFFFFF
+                )
             };
             // Use load_internal_asset! for internal shaders
             quote! {
@@ -172,7 +174,7 @@ pub fn derive_atmospheric(ast: syn::DeriveInput) -> Result<TokenStream> {
                     handle
                 }
             }
-        },
+        }
     };
 
     let fields = match &ast.data {
@@ -469,7 +471,7 @@ pub fn derive_atmospheric(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                 let render_app = app.sub_app_mut(#render_path::RenderApp);
                 let render_device = render_app.world().resource::<#render_path::renderer::RenderDevice>();
-                let #atmosphere_path::pipeline::AtmosphereImageBindGroupLayout(image_bind_group_layout) = render_app.world().resource::<#atmosphere_path::pipeline::AtmosphereImageBindGroupLayout>().clone();
+                let #atmosphere_path::pipeline::AtmosphereImageBindGroupLayoutDescriptor(image_bind_group_layout) = render_app.world().resource::<#atmosphere_path::pipeline::AtmosphereImageBindGroupLayoutDescriptor>().clone();
 
                 let bind_group_layout = Self::bind_group_layout(render_device);
 

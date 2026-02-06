@@ -55,10 +55,10 @@ pub struct AtmosphereImage {
 
 /// The `BindGroupLayout` for binding [`AtmosphereImage`] to the compute shader.
 #[derive(Resource, Debug, Clone)]
-pub struct AtmosphereImageBindGroupLayout(pub BindGroupLayoutDescriptor);
+pub struct AtmosphereImageBindGroupLayoutDescriptor(pub BindGroupLayoutDescriptor);
 
-impl FromWorld for AtmosphereImageBindGroupLayout {
-    fn from_world(world: &mut World) -> Self {
+impl FromWorld for AtmosphereImageBindGroupLayoutDescriptor {
+    fn from_world(_world: &mut World) -> Self {
         Self(BindGroupLayoutDescriptor::new(
             "bevy_atmosphere_image_bind_group_layout",
             &[BindGroupLayoutEntry {
@@ -386,7 +386,7 @@ fn prepare_atmosphere_bind_group(
     render_device: Res<RenderDevice>,
     fallback_image: Res<FallbackImage>,
     type_registry: Res<AtmosphereTypeRegistry>,
-    image_bind_group_layout: Res<AtmosphereImageBindGroupLayout>,
+    image_bind_group_layout: Res<AtmosphereImageBindGroupLayoutDescriptor>,
     atmosphere: Option<Res<AtmosphereModel>>,
     pipeline_cache: Res<PipelineCache>,
 ) {
@@ -416,7 +416,7 @@ fn prepare_atmosphere_bind_group(
             *cached_metadata = CachedAtmosphereModelMetadata(Some(data.clone()));
             data
         });
-        data.bind_group_layout
+        data.bind_group_layout_desc
     };
 
     let atmosphere_bind_group = atmosphere.model().as_bind_group(

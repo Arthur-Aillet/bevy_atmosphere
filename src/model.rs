@@ -80,7 +80,7 @@ pub struct AtmosphereModelMetadata {
     /// Used to test if the model has changed.
     pub id: TypeId,
     /// Used to create the `BindGroup`.
-    pub bind_group_layout: BindGroupLayoutDescriptor,
+    pub bind_group_layout_desc: BindGroupLayoutDescriptor,
     /// Used to get the shader's pipeline.
     pub pipeline: CachedComputePipelineId,
 }
@@ -89,7 +89,7 @@ pub struct AtmosphereModelMetadata {
 pub trait RegisterAtmosphereModel: GetTypeRegistration {
     fn register(app: &mut App);
 
-    fn bind_group_layout() -> BindGroupLayoutDescriptor;
+    fn bind_group_layout_desc() -> BindGroupLayoutDescriptor;
 }
 
 /// A trait for using [`RegisterAtmosphereModel`] from `App`.

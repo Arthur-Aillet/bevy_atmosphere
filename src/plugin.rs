@@ -1,10 +1,6 @@
 //! Provides a `Plugin` for making skyboxes with procedural sky textures.
 
-use bevy::{
-    asset::load_internal_asset,
-    prelude::*,
-    render::RenderApp,
-};
+use bevy::{asset::load_internal_asset, prelude::*, render::RenderApp};
 
 use crate::{
     pipeline::*,
@@ -32,7 +28,7 @@ impl Plugin for AtmospherePlugin {
             "shaders/skybox.wgsl",
             Shader::from_wgsl
         );
-        
+
         #[cfg(feature = "gradient")]
         load_internal_asset!(
             app,
@@ -82,7 +78,7 @@ impl Plugin for AtmospherePlugin {
 
         let render_app = app.sub_app_mut(RenderApp);
 
-        render_app.init_resource::<AtmosphereImageBindGroupLayout>();
+        render_app.init_resource::<AtmosphereImageBindGroupLayoutDescriptor>();
 
         #[cfg(feature = "gradient")]
         app.add_atmosphere_model::<crate::collection::gradient::Gradient>();
