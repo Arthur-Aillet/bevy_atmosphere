@@ -7,11 +7,11 @@ struct Gradient {
 
 fn render_gradient(r: vec3<f32>, g: Gradient) -> vec3<f32> {
     let r_norm = normalize(r);
-    let y = r_norm.y;
+    let z = r_norm.z;
 
-    let p_sky = max(y, 0f);
-    let p_horizon = 1f-abs(y);
-    let p_ground = max(-y, 0f);
+    let p_sky = max(z, 0f);
+    let p_horizon = 1f-abs(z);
+    let p_ground = max(-z, 0f);
 
     let color = (g.sky * p_sky) + (g.horizon * p_horizon) + (g.ground * p_ground);
 
