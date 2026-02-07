@@ -33,6 +33,10 @@ pub struct Gradient {
     ///
     /// The color of the bottom.
     pub ground: LinearRgba,
+    /// Height of the horizon (Default: 0.0)
+    ///
+    /// Offsets the horizon
+    pub height: f32,
 }
 
 impl Default for Gradient {
@@ -41,6 +45,7 @@ impl Default for Gradient {
             sky: Color::srgb(0.29, 0.41, 0.50).into(),
             horizon: Color::srgb(0.48, 0.62, 0.69).into(),
             ground: Color::srgb(0.71, 0.69, 0.57).into(),
+            height: 0.0,
         }
     }
 }

@@ -3,15 +3,16 @@ struct Gradient {
     sky: vec4<f32>,
     horizon: vec4<f32>,
     ground: vec4<f32>,
+    height: f32,
 }
 
 fn render_gradient(r: vec3<f32>, g: Gradient) -> vec3<f32> {
     let r_norm = normalize(r);
     let z = r_norm.z;
 
-    let p_sky = max(z, 0f);
-    let p_horizon = 1f-abs(z);
-    let p_ground = max(-z, 0f);
+    let p_sky = max((z - g.height) / (1f - g.height), 0f);
+    let p_horizon = max(1f-abs(z + g.height), 0f);
+    let p_ground = max((-z + g.height) / (1f - g.height), 0f);
 
     let color = (g.sky * p_sky) + (g.horizon * p_horizon) + (g.ground * p_ground);
 
@@ -28,11 +29,11 @@ var image: texture_storage_2d_array<rgba16float, write>;
 fn main(@builtin(global_invocation_id) invocation_id: vec3<u32>, @builtin(num_workgroups) num_workgroups: vec3<u32>) {
     let size = textureDimensions(image).x;
     let scale = f32(size)/2f;
-    
+
     let dir = vec2<f32>((f32(invocation_id.x)/scale) - 1f, (f32(invocation_id.y)/scale) - 1f);
 
     var ray: vec3<f32>;
-    
+
     switch invocation_id.z {
         case 0u {
             ray = vec3<f32>(1f, -dir.y, -dir.x); // +X
