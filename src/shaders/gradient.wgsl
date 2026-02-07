@@ -11,8 +11,8 @@ fn render_gradient(r: vec3<f32>, g: Gradient) -> vec3<f32> {
     let z = r_norm.z;
 
     let p_sky = max((z - g.height) / (1f - g.height), 0f);
-    let p_horizon = max(1f-abs(z + g.height), 0f);
-    let p_ground = max((-z + g.height) / (1f - g.height), 0f);
+    let p_horizon = max(1f-abs(z - g.height), 0f);
+    let p_ground = max((-z + g.height) / (1f + g.height), 0f);
 
     let color = (g.sky * p_sky) + (g.horizon * p_horizon) + (g.ground * p_ground);
 
